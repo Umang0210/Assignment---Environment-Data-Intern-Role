@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII Shield - Intelligent Document Anonymization & Redaction Engine</title>
+  <meta name="description" content="AI-powered PII detection and redaction platform for Word documents with side-by-side file analysis and detailed metrics.">
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="bg-glow blob-1"></div>
+    <div class="bg-glow blob-2"></div>
+    <div class="bg-glow blob-3"></div>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="logo-text">
+          <h1>PII Shield <span class="badge-v1">v1.0</span></h1>
+          <p>Hybrid spaCy NER & Regex Document Redaction Engine</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="status-indicator online"></span>
+        <span class="status-text">Engine Ready</span>
+      </div>
+    </header>
+
+    <!-- Upload & Controls Section -->
+    <section class="card upload-card" id="upload-section">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Document Upload & Configuration</h2>
+        <p>Select or drag a Word document (<code>.docx</code>) to detect and redact sensitive PII</p>
+      </div>
+
+      <div class="upload-grid">
+        <!-- File Dropzone -->
+        <div class="dropzone-container" id="dropzone">
+          <input type="file" id="file-input" accept=".docx" hidden>
+          <div class="dropzone-content" id="dropzone-content">
+            <div class="dropzone-icon">
+              <i class="fa-solid fa-file-word"></i>
+            </div>
+            <p class="dropzone-title">Drag & drop your document here</p>
+            <p class="dropzone-subtitle">or <span class="browse-btn">browse file</span> from computer</p>
+            <span class="file-hint">Supported format: .docx</span>
+          </div>
+
+          <!-- File Selected Preview State -->
+          <div class="file-selected-preview hidden" id="file-preview">
+            <div class="file-icon-box">
+              <i class="fa-solid fa-file-contract"></i>
+            </div>
+            <div class="file-details">
+              <div class="file-name" id="selected-filename">sample_document.docx</div>
+              <div class="file-meta" id="selected-filesize">245 KB</div>
+            </div>
+            <button class="icon-btn remove-file-btn" id="remove-file-btn" title="Remove file">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls Sidebar -->
+        <div class="controls-panel">
+          <div class="control-group">
+            <div class="label-with-value">
+              <label for="confidence-range"><i class="fa-solid fa-sliders"></i> Confidence Threshold</label>
+              <span class="badge-value" id="confidence-display">0.65</span>
+            </div>
+            <input type="range" id="confidence-range" min="0.10" max="0.95" step="0.05" value="0.65">
+            <div class="range-labels">
+              <span>Strict (0.10)</span>
+              <span>Balanced (0.65)</span>
+              <span>Precise (0.95)</span>
+            </div>
+          </div>
+
+          <div class="control-group checkbox-group">
+            <label class="toggle-switch">
+              <input type="checkbox" id="reset-cache-check">
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="toggle-label">
+              <span>Reset Synthetic Generator Cache</span>
+              <small>Generate fresh fake values instead of cached consistent replacements</small>
+            </div>
+          </div>
+
+          <button class="primary-btn glow-btn" id="start-redact-btn" disabled>
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Start Redaction Process</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress Indicator Overlay / Banner -->
+    <div class="progress-card card hidden" id="progress-section">
+      <div class="progress-header">
+        <div class="spinner-box">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </div>
+        <div class="progress-title-box">
+          <h3 id="progress-status-text">Processing Document...</h3>
+          <p id="progress-sub-text">Extracting paragraphs and running spaCy NER & regex patterns</p>
+        </div>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Output & Results Section (Hidden until complete) -->
+    <div class="results-container hidden" id="results-section">
+      
+      <!-- Action Banner: Download Files -->
+      <section class="card output-files-card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-file-export"></i> Processed Document Downloads</h2>
+            <p>Compare the edited output with the original source document copy</p>
+          </div>
+          <span class="badge-success"><i class="fa-solid fa-circle-check"></i> Processing Complete</span>
+        </div>
+
+        <div class="files-grid">
+          <!-- Edited File Card -->
+          <div class="file-card edited-file-card">
+            <div class="file-card-header">
+              <div class="file-card-icon">
+                <i class="fa-solid fa-file-shield"></i>
+              </div>
+              <div class="file-card-title">
+                <h3>Redacted Document</h3>
+                <span class="tag tag-primary">Edited File</span>
+              </div>
+            </div>
+            <p class="file-card-desc">All detected PII entities replaced with realistic synthetic fake data.</p>
+            <div class="file-card-footer">
+              <a id="download-redacted-btn" href="#" download class="download-btn btn-success">
+                <i class="fa-solid fa-download"></i> Download Edited File (.docx)
+              </a>
+            </div>
+          </div>
+
+          <!-- Original File Card -->
+          <div class="file-card original-file-card">
+            <div class="file-card-header">
+              <div class="file-card-icon">
+                <i class="fa-solid fa-file-code"></i>
+              </div>
+              <div class="file-card-title">
+                <h3>Original Reference Copy</h3>
+                <span class="tag tag-secondary">Original Source</span>
+              </div>
+            </div>
+            <p class="file-card-desc">Saved backup copy of the uploaded original document for verification.</p>
+            <div class="file-card-footer">
+              <a id="download-original-btn" href="#" download class="download-btn btn-outline">
+                <i class="fa-solid fa-file-arrow-down"></i> Download Original File (.docx)
+              </a>
+            </div>
+          </div>
+
+          <!-- Extra Reports Card -->
+          <div class="file-card reports-file-card">
+            <div class="file-card-header">
+              <div class="file-card-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+              </div>
+              <div class="file-card-title">
+                <h3>Audit Mapping & Report</h3>
+                <span class="tag tag-info">JSON & Markdown</span>
+              </div>
+            </div>
+            <p class="file-card-desc">Detailed PII entity mapping table and comprehensive evaluation report.</p>
+            <div class="file-card-footer extra-downloads">
+              <a id="download-mapping-btn" href="#" download class="download-btn btn-subtle">
+                <i class="fa-solid fa-code"></i> PII Mapping (.json)
+              </a>
+              <a id="download-report-btn" href="#" download class="download-btn btn-subtle">
+                <i class="fa-solid fa-newspaper"></i> Report (.md)
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Key Metrics & Process Statistics -->
+      <section class="card metrics-card">
+        <div class="card-header">
+          <h2><i class="fa-solid fa-chart-column"></i> Process Numbers & Metrics Dashboard</h2>
+          <p>Key analytics on entity detection performance, method split, and confidence levels</p>
+        </div>
+
+        <!-- Top Overview Metric Cards -->
+        <div class="stats-cards-grid">
+          <div class="stat-card accent-purple">
+            <div class="stat-icon"><i class="fa-solid fa-eye-slash"></i></div>
+            <div class="stat-content">
+              <span class="stat-label">Total PII Entities Detected</span>
+              <span class="stat-number" id="metric-total-pii">0</span>
+            </div>
+          </div>
+
+          <div class="stat-card accent-blue">
+            <div class="stat-icon"><i class="fa-solid fa-fingerprint"></i></div>
+            <div class="stat-content">
+              <span class="stat-label">Unique PII Values</span>
+              <span class="stat-number" id="metric-unique-pii">0</span>
+            </div>
+          </div>
+
+          <div class="stat-card accent-green">
+            <div class="stat-icon"><i class="fa-solid fa-gauge-high"></i></div>
+            <div class="stat-content">
+              <span class="stat-label">High Confidence Detections</span>
+              <span class="stat-number" id="metric-high-conf">0</span>
+            </div>
+          </div>
+
+          <div class="stat-card accent-amber">
+            <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-content">
+              <span class="stat-label">Processing Time</span>
+              <span class="stat-number" id="metric-duration">0.00s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Breakdown Grid -->
+        <div class="analytics-grid">
+          <!-- Entity Types Breakdown -->
+          <div class="analytics-card">
+            <h3><i class="fa-solid fa-tags"></i> PII Breakdown by Entity Type</h3>
+            <div class="bars-container" id="type-bars-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Detection Methods Breakdown -->
+          <div class="analytics-card">
+            <h3><i class="fa-solid fa-microchip"></i> Detection Method Split</h3>
+            <div class="bars-container" id="method-bars-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Confidence Breakdown -->
+          <div class="analytics-card">
+            <h3><i class="fa-solid fa-bullseye"></i> Confidence Distribution</h3>
+            <div class="confidence-summary">
+              <div class="conf-item high">
+                <span class="conf-dot"></span>
+                <span class="conf-title">High (≥ 0.85)</span>
+                <span class="conf-val" id="conf-high-val">0</span>
+              </div>
+              <div class="conf-item medium">
+                <span class="conf-dot"></span>
+                <span class="conf-title">Medium (0.70 - 0.84)</span>
+                <span class="conf-val" id="conf-med-val">0</span>
+              </div>
+              <div class="conf-item low">
+                <span class="conf-dot"></span>
+                <span class="conf-title">Low (< 0.70)</span>
+                <span class="conf-val" id="conf-low-val">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Side-by-Side Text Comparison Viewer -->
+      <section class="card comparison-card">
+        <div class="card-header flex-between">
+          <div>
+            <h2><i class="fa-solid fa-code-compare"></i> Document Content Comparison</h2>
+            <p>Live text comparison between original document and redacted output with entity highlights</p>
+          </div>
+          <div class="tab-controls">
+            <button class="tab-btn active" id="tab-split-btn"><i class="fa-solid fa-columns"></i> Side-by-Side</button>
+            <button class="tab-btn" id="tab-redacted-btn"><i class="fa-solid fa-file-shield"></i> Redacted Only</button>
+            <button class="tab-btn" id="tab-original-btn"><i class="fa-solid fa-file-lines"></i> Original Only</button>
+          </div>
+        </div>
+
+        <div class="comparison-view split-mode" id="comparison-view-container">
+          <!-- Left Panel: Original -->
+          <div class="text-panel original-panel">
+            <div class="panel-header">
+              <span><i class="fa-solid fa-file-lines"></i> Original Document Content</span>
+              <span class="text-length-badge" id="orig-char-count">0 chars</span>
+            </div>
+            <div class="panel-body text-content" id="original-text-display">
+              <!-- Text content rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Right Panel: Redacted -->
+          <div class="text-panel redacted-panel">
+            <div class="panel-header">
+              <span><i class="fa-solid fa-file-shield"></i> Redacted Document Content</span>
+              <span class="text-length-badge" id="redacted-char-count">0 chars</span>
+            </div>
+            <div class="panel-body text-content" id="redacted-text-display">
+              <!-- Text content rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detailed Entity Mapping Table -->
+      <section class="card mapping-card">
+        <div class="card-header flex-between">
+          <div>
+            <h2><i class="fa-solid fa-list-check"></i> Detected PII Mapping Table</h2>
+            <p>Complete record of detected PII terms and synthetic replacement values</p>
+          </div>
+          <div class="table-search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="table-search-input" placeholder="Search entity or replacement...">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="mapping-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Original Detected PII</th>
+                <th>Redacted Fake Replacement</th>
+                <th>Entity Type</th>
+                <th>Method</th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="mapping-table-body">
+              <!-- Rows rendered dynamically via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
