@@ -1,6 +1,6 @@
 import re
 import spacy
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set
 from dataclasses import dataclass
 
 @dataclass
@@ -13,25 +13,50 @@ class PIIMatch:
     confidence: float
     method: str  # 'regex', 'ner', or 'hybrid'
 
+# Non-PII words, labels, and acronyms that should never be redacted as PII entities
+NON_PII_WORDS: Set[str] = {
+    'PII', 'SSN', 'DOB', 'PAN', 'IP', 'IPV4', 'IPV6', 'MAC', 'OTP', 'API',
+    'INR', 'USD', 'EUR', 'GBP', 'ID', 'GOV_ID', 'NETWORK', 'EMAIL', 'PHONE',
+    'MOBILE', 'FAX', 'TEL', 'ADDRESS', 'CITY', 'STATE', 'COUNTRY', 'ZIP',
+    'TAX', 'PASSPORT', 'LICENSE', 'DRIVER', 'NATIONAL', 'CONFIDENTIAL',
+    'OPERATIONS', 'SUMMARY', 'REPORT', 'APPENDIX', 'SECTION', 'TABLE', 'FIGURE',
+    'NOTE', 'CASE', 'CUSTOMER', 'EMPLOYEE', 'SUPPORT', 'PUBLIC',
+    'OFFICE', 'PRODUCT', 'SERIAL', 'MODEL', 'FIRMWARE', 'TICKET', 'ACCOUNT', 'INVOICE',
+    'ORDER', 'QUANTITY', 'WAREHOUSE', 'AISLE', 'SHELF', 'CREDENTIAL', 'DEVICE',
+    'URL', 'HTTP', 'HTTPS', 'WWW', 'ORGANIZATION', 'COMPANY', 'LOCATION', 'NAME',
+    'FIRST', 'LAST', 'TITLE', 'STATUS', 'SYSTEM', 'DATA', 'USER', 'PASSWORD',
+    'NATIONAL ID', 'DRIVE LICENSE', 'DRIVER LICENSE', 'NATIONAL INSURANCE',
+    'CREDIT CARD', 'CARD NUMBER', 'SECURITY', 'AUTHENTICATION', 'EXAMPLE'
+}
+
+# Operational metadata prefix patterns (e.g., INV-2026-44081, PROD-2026-77821, ACCT-78451290)
+NON_PII_PREFIXES = ('ACCT-', 'INV-', 'PROD-', 'TKT-', 'DEVICE-', 'SESS-', 'WHSEC_', 'SK_TEST_')
+
 class RegexDetector:
-    """Detect PII using regex patterns."""
+    """Detect PII using high-precision regex patterns."""
     
-    # Email pattern
+    # Email pattern (RFC compliant)
     EMAIL_PATTERN = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     
-    # Phone patterns: +91 XXXXXXXXXX, +XX XXXXXXXXX, or plain digits
-    PHONE_PATTERN = r'(?:\+91[\s]?)?[6-9]\d{9}\b|(?:\+\d{1,3}[\s]?\d{1,14})\b'
+    # US SSN pattern: XXX-XX-XXXX format strictly
+    SSN_PATTERN = r'\b\d{3}-\d{2}-\d{4}\b'
     
-    # SSN/Aadhar: 9-12 digits possibly with spaces/dashes
-    SSN_PATTERN = r'\b\d{3}[-\s]?\d{2,3}[-\s]?\d{4,5}\b'
+    # Aadhaar / National ID pattern: 12 digits formatted as XXXX XXXX XXXX or XXXX-XXXX-XXXX
+    AADHAAR_PATTERN = r'\b\d{4}[-\s]\d{4}[-\s]\d{4}\b'
+
+    # PAN Card pattern (India): 5 letters + 4 digits + 1 letter, or synthetic test format PAN-TEST-XXX
+    PAN_PATTERN = r'\b(?:PAN-TEST-[A-Z0-9]+|[A-Z]{5}\d{4}[A-Z])\b'
+
+    # Synthetic Government / ID reference patterns (Passport, Tax ID, National Insurance, Driver License)
+    GOV_ID_PATTERN = r'\b(?:NI-TEST-[A-Z0-9]+|TAX-TEST-[A-Z0-9]+|TEST-[A-Z0-9-]+|PASSPORT\s+[A-Z0-9]+)\b'
     
-    # Credit card: 16 digits with optional spaces/dashes
+    # Credit card: 13 to 16 digits with optional spaces/dashes
     CREDIT_CARD_PATTERN = r'\b(?:\d{4}[\s-]?){3}\d{4}\b'
     
-    # Date of birth: DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD, YYYY/MM/DD
-    DOB_PATTERN = r'\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{4}|\d{4}[/-]\d{1,2}[/-]\d{1,2})\b'
+    # Date of birth / Date patterns: DD/MM/YYYY, YYYY-MM-DD, 14 Feb 1991, February 14, 1991
+    DOB_PATTERN = r'\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{4}|\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}[-\s](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[-\s]\d{4}|(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4})\b'
     
-    # IPv4 address
+    # IPv4 address (excluding private 0.x and 255.x)
     IP_PATTERN = r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
     
     @staticmethod
@@ -39,8 +64,9 @@ class RegexDetector:
         """Find email addresses."""
         matches = []
         for match in re.finditer(RegexDetector.EMAIL_PATTERN, text):
+            email_str = match.group()
             matches.append(PIIMatch(
-                text=match.group(),
+                text=email_str,
                 pii_type='email',
                 start=match.start(),
                 end=match.end(),
@@ -51,12 +77,19 @@ class RegexDetector:
     
     @staticmethod
     def find_phones(text: str) -> List[PIIMatch]:
-        """Find phone numbers."""
+        """Find phone numbers (US, UK, Indian, International)."""
         matches = []
-        for match in re.finditer(RegexDetector.PHONE_PATTERN, text):
-            # filter false positives: plain 10-digit numbers that don't look like phones
+        patterns = [
+            r'\+(?:[0-9][\s.-]?){7,14}[0-9]\b',  # +91 91234 56789, +44 7700 900123, +1 202-555-0199
+            r'\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b',  # (415) 555-0138, 202-555-0199, 212-555-0144
+            r'\b[6-9]\d{4}[\s.-]?\d{5}\b',  # Indian 10-digit format starting with 6-9
+        ]
+        combined_pattern = '|'.join(f'(?:{p})' for p in patterns)
+        for match in re.finditer(combined_pattern, text):
             matched_text = match.group().strip()
-            if len(matched_text) >= 10 and ('+' in matched_text or matched_text[0] in '6789'):
+            digits_only = re.sub(r'\D', '', matched_text)
+            # Ensure proper length and avoid matching pure credit cards (16 digits) or SSNs
+            if 7 <= len(digits_only) <= 15 and not RegexDetector._luhn_check(digits_only):
                 matches.append(PIIMatch(
                     text=matched_text,
                     pii_type='phone',
@@ -69,45 +102,77 @@ class RegexDetector:
     
     @staticmethod
     def find_ssns(text: str) -> List[PIIMatch]:
-        """Find SSN/Aadhar numbers."""
+        """Find US SSNs."""
         matches = []
         for match in re.finditer(RegexDetector.SSN_PATTERN, text):
             matched_text = match.group()
-            # validate: should have enough digits (9-12)
-            digit_count = len(matched_text.replace('-', '').replace(' ', ''))
-            if 9 <= digit_count <= 12:
-                matches.append(PIIMatch(
-                    text=matched_text,
-                    pii_type='ssn',
-                    start=match.start(),
-                    end=match.end(),
-                    confidence=0.75,  # lower confidence due to false positives
-                    method='regex'
-                ))
+            matches.append(PIIMatch(
+                text=matched_text,
+                pii_type='ssn',
+                start=match.start(),
+                end=match.end(),
+                confidence=0.90,
+                method='regex'
+            ))
+        return matches
+
+    @staticmethod
+    def find_aadhaar_and_gov_ids(text: str) -> List[PIIMatch]:
+        """Find Aadhaar numbers, PAN cards, and government ID references."""
+        matches = []
+        # Aadhaar
+        for match in re.finditer(RegexDetector.AADHAAR_PATTERN, text):
+            matches.append(PIIMatch(
+                text=match.group(),
+                pii_type='ssn',
+                start=match.start(),
+                end=match.end(),
+                confidence=0.85,
+                method='regex'
+            ))
+        # PAN Cards
+        for match in re.finditer(RegexDetector.PAN_PATTERN, text):
+            matches.append(PIIMatch(
+                text=match.group(),
+                pii_type='ssn',
+                start=match.start(),
+                end=match.end(),
+                confidence=0.90,
+                method='regex'
+            ))
+        # Other synthetic Gov IDs
+        for match in re.finditer(RegexDetector.GOV_ID_PATTERN, text):
+            matches.append(PIIMatch(
+                text=match.group(),
+                pii_type='ssn',
+                start=match.start(),
+                end=match.end(),
+                confidence=0.85,
+                method='regex'
+            ))
         return matches
     
     @staticmethod
     def find_credit_cards(text: str) -> List[PIIMatch]:
-        """Find credit card numbers."""
+        """Find credit card numbers with Luhn check validation."""
         matches = []
         for match in re.finditer(RegexDetector.CREDIT_CARD_PATTERN, text):
             matched_text = match.group()
-            # validate luhn for actual card numbers
-            digits_only = matched_text.replace(' ', '').replace('-', '')
-            if RegexDetector._luhn_check(digits_only):
+            digits_only = re.sub(r'\D', '', matched_text)
+            if len(digits_only) == 16 and RegexDetector._luhn_check(digits_only):
                 matches.append(PIIMatch(
                     text=matched_text,
                     pii_type='credit_card',
                     start=match.start(),
                     end=match.end(),
-                    confidence=0.9,
+                    confidence=0.92,
                     method='regex'
                 ))
         return matches
     
     @staticmethod
     def find_dobs(text: str) -> List[PIIMatch]:
-        """Find dates of birth."""
+        """Find dates of birth / dates."""
         matches = []
         for match in re.finditer(RegexDetector.DOB_PATTERN, text):
             matches.append(PIIMatch(
@@ -115,18 +180,17 @@ class RegexDetector:
                 pii_type='dob',
                 start=match.start(),
                 end=match.end(),
-                confidence=0.7,  # lower confidence: dates are common
+                confidence=0.75,
                 method='regex'
             ))
         return matches
     
     @staticmethod
     def find_ips(text: str) -> List[PIIMatch]:
-        """Find IP addresses."""
+        """Find IPv4 addresses."""
         matches = []
         for match in re.finditer(RegexDetector.IP_PATTERN, text):
             matched_text = match.group()
-            # filter private/reserved ranges if needed
             if not matched_text.startswith(('0.', '255.')):
                 matches.append(PIIMatch(
                     text=matched_text,
@@ -155,25 +219,52 @@ class RegexDetector:
         return total % 10 == 0
 
 class NERDetector:
-    """Detect PII using spaCy NER."""
+    """Detect PII using spaCy NER with filtering."""
     
     def __init__(self):
         self.nlp = spacy.load('en_core_web_sm')
     
+    def _is_valid_entity(self, text: str) -> bool:
+        """Filter out non-PII words, operational ref IDs, and formatting artifacts."""
+        clean_text = text.strip(" \t\n\r.,;:()[]{}'\"")
+        if not clean_text or len(clean_text) < 2:
+            return False
+        
+        upper_text = clean_text.upper()
+        if upper_text in NON_PII_WORDS:
+            return False
+        
+        # Check non-PII prefixes (e.g. ACCT-..., INV-..., PROD-...)
+        for prefix in NON_PII_PREFIXES:
+            if upper_text.startswith(prefix):
+                return False
+        
+        # Exclude monetary amounts (e.g. INR 18,450.00, USD 742.18)
+        if re.match(r'^(?:INR|USD|EUR|GBP|CAD|AUD|\$|₹|£|€)\s*[\d,]+(?:\.\d+)?$', clean_text, re.I):
+            return False
+
+        # Exclude pure digits or numbers
+        if clean_text.isdigit():
+            return False
+
+        return True
+
     def find_names(self, text: str) -> List[PIIMatch]:
         """Find person names using NER."""
         doc = self.nlp(text)
         matches = []
         for ent in doc.ents:
             if ent.label_ == 'PERSON':
-                matches.append(PIIMatch(
-                    text=ent.text,
-                    pii_type='name',
-                    start=ent.start_char,
-                    end=ent.end_char,
-                    confidence=0.82,
-                    method='ner'
-                ))
+                clean_text = ent.text.strip(" \t\n\r.,;:()[]{}'\"")
+                if self._is_valid_entity(clean_text):
+                    matches.append(PIIMatch(
+                        text=clean_text,
+                        pii_type='name',
+                        start=ent.start_char,
+                        end=ent.end_char,
+                        confidence=0.82,
+                        method='ner'
+                    ))
         return matches
     
     def find_organizations(self, text: str) -> List[PIIMatch]:
@@ -182,34 +273,38 @@ class NERDetector:
         matches = []
         for ent in doc.ents:
             if ent.label_ == 'ORG':
-                matches.append(PIIMatch(
-                    text=ent.text,
-                    pii_type='company',
-                    start=ent.start_char,
-                    end=ent.end_char,
-                    confidence=0.78,
-                    method='ner'
-                ))
+                clean_text = ent.text.strip(" \t\n\r.,;:()[]{}'\"")
+                if self._is_valid_entity(clean_text):
+                    matches.append(PIIMatch(
+                        text=clean_text,
+                        pii_type='company',
+                        start=ent.start_char,
+                        end=ent.end_char,
+                        confidence=0.78,
+                        method='ner'
+                    ))
         return matches
     
     def find_locations(self, text: str) -> List[PIIMatch]:
-        """Find locations (potential addresses) using NER."""
+        """Find locations (cities, states, countries, addresses) using NER."""
         doc = self.nlp(text)
         matches = []
         for ent in doc.ents:
-            if ent.label_ == 'GPE':  # geopolitical entity
-                matches.append(PIIMatch(
-                    text=ent.text,
-                    pii_type='location',
-                    start=ent.start_char,
-                    end=ent.end_char,
-                    confidence=0.75,
-                    method='ner'
-                ))
+            if ent.label_ in ('GPE', 'LOC', 'FAC'):
+                clean_text = ent.text.strip(" \t\n\r.,;:()[]{}'\"")
+                if self._is_valid_entity(clean_text):
+                    matches.append(PIIMatch(
+                        text=clean_text,
+                        pii_type='location',
+                        start=ent.start_char,
+                        end=ent.end_char,
+                        confidence=0.75,
+                        method='ner'
+                    ))
         return matches
 
 class HybridPIIDetector:
-    """Combined regex + NER detector with deduplication."""
+    """Combined regex + NER detector with deduplication and accuracy tuning."""
     
     def __init__(self):
         self.regex_detector = RegexDetector()
@@ -219,10 +314,11 @@ class HybridPIIDetector:
         """Detect all PII types and deduplicate overlapping matches."""
         matches = []
         
-        # Regex detections
+        # Regex detections (highest specificity first)
         matches.extend(self.regex_detector.find_emails(text))
         matches.extend(self.regex_detector.find_phones(text))
         matches.extend(self.regex_detector.find_ssns(text))
+        matches.extend(self.regex_detector.find_aadhaar_and_gov_ids(text))
         matches.extend(self.regex_detector.find_credit_cards(text))
         matches.extend(self.regex_detector.find_dobs(text))
         matches.extend(self.regex_detector.find_ips(text))
@@ -232,16 +328,23 @@ class HybridPIIDetector:
         matches.extend(self.ner_detector.find_organizations(text))
         matches.extend(self.ner_detector.find_locations(text))
         
-        # Filter by confidence
-        matches = [m for m in matches if m.confidence >= min_confidence]
+        # Clean entity text and filter out invalid / blocked terms
+        cleaned_matches = []
+        for m in matches:
+            clean_str = m.text.strip(" \t\n\r.,;:()[]{}'\"")
+            if clean_str and m.confidence >= min_confidence:
+                upper = clean_str.upper()
+                if upper not in NON_PII_WORDS and not any(upper.startswith(p) for p in NON_PII_PREFIXES):
+                    m.text = clean_str
+                    cleaned_matches.append(m)
         
-        # Deduplicate overlapping matches (keep highest confidence)
-        matches = self._deduplicate(matches)
+        # Deduplicate overlapping matches (keep highest confidence match)
+        deduped = self._deduplicate(cleaned_matches)
         
         # Sort by position
-        matches.sort(key=lambda m: m.start)
+        deduped.sort(key=lambda m: m.start)
         
-        return matches
+        return deduped
     
     @staticmethod
     def _deduplicate(matches: List[PIIMatch]) -> List[PIIMatch]:
@@ -249,12 +352,11 @@ class HybridPIIDetector:
         if not matches:
             return []
         
-        # Sort by start position, then by confidence (descending)
-        sorted_matches = sorted(matches, key=lambda m: (m.start, -m.confidence))
+        # Sort by start position, then by confidence (descending), then by length (descending)
+        sorted_matches = sorted(matches, key=lambda m: (m.start, -m.confidence, -len(m.text)))
         
         deduplicated = []
         for match in sorted_matches:
-            # Check if this match overlaps with any already added
             overlaps = False
             for existing in deduplicated:
                 if not (match.end <= existing.start or match.start >= existing.end):

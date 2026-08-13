@@ -1957,7 +1957,7 @@
   },
   "81081 14949": {
     "type": "ssn",
-    "fake_value": "9118587972",
+    "fake_value": "3590475716",
     "confidence": 0.75,
     "method": "regex"
   },
@@ -2071,7 +2071,7 @@
   },
   "022-68052182": {
     "type": "ssn",
-    "fake_value": "44191348568",
+    "fake_value": "31744016795",
     "confidence": 0.75,
     "method": "regex"
   },
@@ -2407,7 +2407,7 @@
   },
   "91586 40360": {
     "type": "ssn",
-    "fake_value": "3120246680",
+    "fake_value": "2500019518",
     "confidence": 0.75,
     "method": "regex"
   },

@@ -1,8 +1,8 @@
 # PII Redaction Evaluation Report
 
-Generated: 2026-08-13 19:09:52
+Generated: 2026-08-13 19:11:40
 
-Source document: Red_Herring_Prospectus.docx
+Source document: C:\Users\umang\Desktop\SCALER AI LABS\output\web_sessions\c43556bd2df9471bb86d427efc98e78d\original_input.docx
 
 ## Executive Summary
 - Total PII entities detected: 3473

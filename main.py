@@ -13,6 +13,11 @@ from src.redactor import PIIRedactor
 from src.faker_provider import FakeDataGenerator
 
 def main():
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
     parser = argparse.ArgumentParser(
         description='Redact personally identifiable information from Word documents',
         formatter_class=argparse.RawDescriptionHelpFormatter,
