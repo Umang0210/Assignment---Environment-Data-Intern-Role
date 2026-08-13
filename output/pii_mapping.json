@@ -1,0 +1,734 @@
+{
+  "CONFIDENTIAL DATA PRIVACY & CUSTOMER OPERATIONS": {
+    "type": "company",
+    "fake_value": "Rodriguez, Figueroa and Sanchez",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "PII": {
+    "type": "company",
+    "fake_value": "Doyle Ltd",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "IP": {
+    "type": "company",
+    "fake_value": "Mcclain, Miller and Henderson",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Aarav Mehta": {
+    "type": "name",
+    "fake_value": "Daniel Wagner",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "aarav.mehta@example.test": {
+    "type": "email",
+    "fake_value": "hoffmanjennifer@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "support@example.test": {
+    "type": "email",
+    "fake_value": "lrobinson@example.com",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "ACCT-78451290": {
+    "type": "location",
+    "fake_value": "65423 Garcia Light, West Melanieview, AS 06196",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "14/02/1991": {
+    "type": "dob",
+    "fake_value": "10/04/1995",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Noida": {
+    "type": "location",
+    "fake_value": "1849 Ray Squares, North Donnaport, CO 31013",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "Uttar Pradesh 201301": {
+    "type": "company",
+    "fake_value": "James Group",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "98765 43210": {
+    "type": "ssn",
+    "fake_value": "6789564954",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "Aarav\n\nSupport": {
+    "type": "company",
+    "fake_value": "Flowers, Martin and Kelly",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Customer Elena Rodriguez": {
+    "type": "company",
+    "fake_value": "Adams, Zuniga and Wong",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "SSN": {
+    "type": "company",
+    "fake_value": "Reid, Ferguson and Sanchez",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "999-88-7777": {
+    "type": "ssn",
+    "fake_value": "919074649",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "09/09/1987": {
+    "type": "dob",
+    "fake_value": "26/01/1977",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "ACCT-44190827": {
+    "type": "company",
+    "fake_value": "Nelson-Schaefer",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "San Francisco": {
+    "type": "location",
+    "fake_value": "503 Linda Locks, Carlshire, FM 94599",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "USA": {
+    "type": "location",
+    "fake_value": "7242 Julie Plain Suite 969, Coxberg, NY 65187",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "elena.rodriguez@example.test": {
+    "type": "email",
+    "fake_value": "camposmichelle@example.org",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "Email": {
+    "type": "name",
+    "fake_value": "Rebecca Henderson",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Noah Williams": {
+    "type": "name",
+    "fake_value": "James Ferrell",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "noah.williams@example.test": {
+    "type": "email",
+    "fake_value": "tasha01@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "National Insurance": {
+    "type": "company",
+    "fake_value": "Potter, Mack and Peterson",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Willow Court": {
+    "type": "company",
+    "fake_value": "Graham-Chavez",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Camden": {
+    "type": "location",
+    "fake_value": "USNV Stanton, FPO AE 67043",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "London NW1": {
+    "type": "name",
+    "fake_value": "Sheila Evans",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Priya Nair": {
+    "type": "name",
+    "fake_value": "Lisa Hernandez",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "priya.nair@example.test": {
+    "type": "email",
+    "fake_value": "amberosborne@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "91234 56789": {
+    "type": "ssn",
+    "fake_value": "3258052157",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "30/11/1983": {
+    "type": "dob",
+    "fake_value": "13/02/2008",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Palm Grove": {
+    "type": "location",
+    "fake_value": "0154 Brian Wells Apt. 171, East Donna, OH 22144",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "Vyttila": {
+    "type": "name",
+    "fake_value": "Shane Henderson",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Kochi": {
+    "type": "location",
+    "fake_value": "465 Lam Mission, East Jeffreymouth, AK 77611",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "Kerala": {
+    "type": "location",
+    "fake_value": "10310 Jones Freeway, Elizabethborough, ND 17843",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "National ID 8888": {
+    "type": "company",
+    "fake_value": "Walls, Duncan and Kennedy",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Identity Verification Records\nIdentity-review": {
+    "type": "company",
+    "fake_value": "Aguirre-Lee",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "DOB": {
+    "type": "company",
+    "fake_value": "Hopkins LLC",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "PAN": {
+    "type": "company",
+    "fake_value": "Jenkins-Shields",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "National ID 9999": {
+    "type": "company",
+    "fake_value": "Nunez Ltd",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Driver License": {
+    "type": "name",
+    "fake_value": "James Morgan",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "NI": {
+    "type": "location",
+    "fake_value": "38726 Joshua Gateway, South Lindseyside, CT 07131",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "Sofia Kapoor": {
+    "type": "name",
+    "fake_value": "Kimberly Smith",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Employee": {
+    "type": "location",
+    "fake_value": "67736 Franklin Alley, Bakermouth, LA 55945",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "17/08/1990": {
+    "type": "dob",
+    "fake_value": "06/01/1993",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "99887 66554": {
+    "type": "ssn",
+    "fake_value": "7500487558",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "sofia.kapoor@example.test": {
+    "type": "email",
+    "fake_value": "smoore@example.org",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "Rosewood Lane": {
+    "type": "name",
+    "fake_value": "Lauren Daniels",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Andheri East": {
+    "type": "company",
+    "fake_value": "Edwards, Williams and Woods",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Mumbai": {
+    "type": "location",
+    "fake_value": "PSC 8208, Box 1219, APO AE 89002",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "Maharashtra\n400069": {
+    "type": "company",
+    "fake_value": "Powell PLC",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Rohan Kapoor": {
+    "type": "name",
+    "fake_value": "Kristopher Harvey",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "97777 11223": {
+    "type": "ssn",
+    "fake_value": "6990925924",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "rohan.kapoor@example.test": {
+    "type": "email",
+    "fake_value": "ksandoval@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "Marcus Chen": {
+    "type": "name",
+    "fake_value": "Dean Santiago",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "03/03/1988": {
+    "type": "dob",
+    "fake_value": "30/12/1966",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "202-555-0199": {
+    "type": "ssn",
+    "fake_value": "9211597459",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "marcus.chen@example.test": {
+    "type": "email",
+    "fake_value": "josephanderson@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "Washington, DC 20001": {
+    "type": "location",
+    "fake_value": "07991 Amanda Parkways Suite 251, West Justin, NV 71701",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "Lina Chen": {
+    "type": "name",
+    "fake_value": "Lisa Archer",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "202-555-0175": {
+    "type": "ssn",
+    "fake_value": "0077124686",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "lina.chen@example.test": {
+    "type": "email",
+    "fake_value": "contrerasangela@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "Elena Rodriguez": {
+    "type": "name",
+    "fake_value": "Shawn Baker",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Metformin": {
+    "type": "name",
+    "fake_value": "Natalie Moore",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "API": {
+    "type": "company",
+    "fake_value": "Jacobs-Robbins",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "203.0.113.42": {
+    "type": "ip",
+    "fake_value": "103.14.81.203",
+    "confidence": 0.88,
+    "method": "regex"
+  },
+  "MAC": {
+    "type": "company",
+    "fake_value": "Freeman, Whitehead and Mathis",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "OTP": {
+    "type": "company",
+    "fake_value": "Walters LLC",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Structured Data Samples\nJSON": {
+    "type": "company",
+    "fake_value": "Smith and Sons",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "1991-02-14": {
+    "type": "dob",
+    "fake_value": "1988-12-20",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "198.51.100.17": {
+    "type": "ip",
+    "fake_value": "192.106.87.91",
+    "confidence": 0.88,
+    "method": "regex"
+  },
+  "Daniel Brooks": {
+    "type": "name",
+    "fake_value": "Kristen Patterson",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "212-555-0144": {
+    "type": "ssn",
+    "fake_value": "5218627101",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "daniel.brooks@example.test": {
+    "type": "email",
+    "fake_value": "rodriguezsierra@example.net",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "New York": {
+    "type": "location",
+    "fake_value": "PSC 8059, Box 8262, APO AE 40905",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "415 555 0188": {
+    "type": "ssn",
+    "fake_value": "8789665308",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "Non-PII Examples": {
+    "type": "company",
+    "fake_value": "Nolan-Flynn",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "2026-07-01": {
+    "type": "dob",
+    "fake_value": "2004-03-08",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Corporate Park": {
+    "type": "location",
+    "fake_value": "31586 Sara Freeway Apt. 260, Lake Sandra, WY 54465",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "INR 18,450.00": {
+    "type": "company",
+    "fake_value": "Shields, Cochran and Adams",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Cross-Document Consistency": {
+    "type": "company",
+    "fake_value": "Rodriguez, Brennan and Garrison",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "AARAV.MEHTA@EXAMPLE.TEST": {
+    "type": "email",
+    "fake_value": "jamessellers@example.com",
+    "confidence": 0.95,
+    "method": "regex"
+  },
+  "+919876543210": {
+    "type": "phone",
+    "fake_value": "+91 4330365414",
+    "confidence": 0.85,
+    "method": "regex"
+  },
+  "98765-43210": {
+    "type": "ssn",
+    "fake_value": "2863156901",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "4111 1111 1111 1111": {
+    "type": "credit_card",
+    "fake_value": "4868501429401961",
+    "confidence": 0.9,
+    "method": "regex"
+  },
+  "4111-1111-1111-1111": {
+    "type": "credit_card",
+    "fake_value": "4569816934060884",
+    "confidence": 0.9,
+    "method": "regex"
+  },
+  "9911112222": {
+    "type": "phone",
+    "fake_value": "3561595148",
+    "confidence": 0.85,
+    "method": "regex"
+  },
+  "ACCT-55100219": {
+    "type": "name",
+    "fake_value": "Jason Powell",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "09/30/2026": {
+    "type": "dob",
+    "fake_value": "25/09/1965",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Maya Srinivasan": {
+    "type": "name",
+    "fake_value": "Cheryl Ortega",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Daniel Okafor": {
+    "type": "name",
+    "fake_value": "Paul Thompson",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Evaluate PII": {
+    "type": "company",
+    "fake_value": "Turner, Kelley and Smith",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Phone\nAddress / IDs": {
+    "type": "company",
+    "fake_value": "Clark-Floyd",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "India": {
+    "type": "location",
+    "fake_value": "7738 Leon Underpass Apt. 148, Clarencebury, TX 41188",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "ACCT-44190827\nCustomer": {
+    "type": "name",
+    "fake_value": "Curtis Johnson",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Noah Williams\n": {
+    "type": "name",
+    "fake_value": "John Atkinson",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "United Kingdom": {
+    "type": "location",
+    "fake_value": "936 Ross Drive Apt. 163, Port Susan, NC 61390",
+    "confidence": 0.75,
+    "method": "ner"
+  },
+  "02-05-2026": {
+    "type": "dob",
+    "fake_value": "12-01-1949",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Aarav Mehta\nExample National Bank": {
+    "type": "name",
+    "fake_value": "Sylvia Martinez",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "7654321012": {
+    "type": "phone",
+    "fake_value": "2788957986",
+    "confidence": 0.85,
+    "method": "regex"
+  },
+  "INR": {
+    "type": "company",
+    "fake_value": "Griffin, Moore and Hensley",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "18-05-2026": {
+    "type": "dob",
+    "fake_value": "29-03-1976",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Elena Rodriguez\nExample Credit Union\n000123456789": {
+    "type": "company",
+    "fake_value": "Walton-Larsen",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "110000999": {
+    "type": "ssn",
+    "fake_value": "244141708",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "5555-5555-5555-4444": {
+    "type": "credit_card",
+    "fake_value": "4873471434558127",
+    "confidence": 0.9,
+    "method": "regex"
+  },
+  "04-06-2026": {
+    "type": "dob",
+    "fake_value": "17-11-1955",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "Noah Williams\nExample London Bank": {
+    "type": "name",
+    "fake_value": "Michael Mccarthy",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "4000 0000 0000 0002": {
+    "type": "credit_card",
+    "fake_value": "4665876036690965",
+    "confidence": 0.9,
+    "method": "regex"
+  },
+  "21-06-2026": {
+    "type": "dob",
+    "fake_value": "27-01-1978",
+    "confidence": 0.7,
+    "method": "regex"
+  },
+  "12345678901": {
+    "type": "ssn",
+    "fake_value": "88900511487",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "822463 10005": {
+    "type": "ssn",
+    "fake_value": "01753413591",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "Aarav Mehta /": {
+    "type": "name",
+    "fake_value": "Guy Molina",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "AARAV": {
+    "type": "company",
+    "fake_value": "Medina-Navarro",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "09876543210": {
+    "type": "ssn",
+    "fake_value": "72329394305",
+    "confidence": 0.75,
+    "method": "regex"
+  },
+  "National ID": {
+    "type": "company",
+    "fake_value": "Hurst, Freeman and Nelson",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Noida / Sector": {
+    "type": "company",
+    "fake_value": "Johnson-Rogers",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Postal": {
+    "type": "company",
+    "fake_value": "Yates, Ramsey and Pittman",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Bank": {
+    "type": "company",
+    "fake_value": "Hooper PLC",
+    "confidence": 0.78,
+    "method": "ner"
+  },
+  "Aarav Mehta\nCustomer": {
+    "type": "name",
+    "fake_value": "James Elliott",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "Noah Williams\nCustomer": {
+    "type": "name",
+    "fake_value": "Marvin Taylor",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "GOV_ID": {
+    "type": "name",
+    "fake_value": "Anthony Gray",
+    "confidence": 0.82,
+    "method": "ner"
+  },
+  "NETWORK": {
+    "type": "company",
+    "fake_value": "Gibson LLC",
+    "confidence": 0.78,
+    "method": "ner"
+  }
+}
